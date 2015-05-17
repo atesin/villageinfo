@@ -131,6 +131,7 @@ in eclipse - pkg explorer
 in eclipse - git repos view
 
 - yourNewRepo - expand - remotes - rclick - PASTE URI - next - (delete dir before) - finish
+- config your libs and do your push
 
 
 
