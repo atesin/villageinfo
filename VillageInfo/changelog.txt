@@ -1,7 +1,7 @@
 v2
 
 - fix golem spawn area calculation
-- this build v2.179 compiled for craftbukkit 1.7.9.r2
+- this build v2.179 compiled for craftbukkit 1.8.3
 
 v1
 
