@@ -1,0 +1,9 @@
+v2
+
+- fix golem spawn area calculation
+- this build v2.179 compiled for craftbukkit 1.7.9.r2
+
+v1
+
+- initial release, compatible with craftbukkit 1.8.4 only
+- todo (maybe): add aggressors information if possible
