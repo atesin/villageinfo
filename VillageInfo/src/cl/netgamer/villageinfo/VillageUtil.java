@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 public class VillageUtil
 {
 	// this class is just a static bridge methods container
-	// made for with craftbukkit 1.8.4
+	// made for with craftbukkit 1.8.3
 	
 	protected static Location getCenter(Village v, World w)
 	{

@@ -1,14 +1,12 @@
 name: VillageInfo
 main: cl.netgamer.villageinfo.VI
-version: 2
+version: 3
 
 commands:
    villageinfo:
       description: show info about current town.
       usage: "just type '/villageinfo' or '/vi' when inside a town to display info"
-      #permission: <plugin name>.basic
-      #permission-message: You don't have <permission>
       aliases: [vi,towninfo]
 
-# aqui tambien se configuran los permisos
+# aqui tambien se configuran los permisos (ya no?)
 # no usar la letra enye

@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-//import java.util.logging.Logger;
+import java.util.logging.Logger;
 
 //179 = import net.minecraft.server.v1_7_R3.MinecraftServer;
 //183 = import net.minecraft.server.v1_8_R2.MinecraftServer;
@@ -23,22 +23,29 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class VI extends JavaPlugin
 {
-
 	// properties
-	//private Logger logger;
+	private static Logger logger;
 	private Map<String, WorldServer> worlds = new HashMap<String, WorldServer>();
+	private boolean usePermissions;
+	private Map<String, Object> lang;
 	
 	// utility method
-	/* private void log(String msg)
+	private static void log(String msg)
 	{
 		logger.info(msg);
-	} */
+	}
 	
 	// plugin load
 	public void onEnable()
 	{
 		// utility
-		//logger = getLogger();
+		logger = getLogger();
+		
+		// get config
+		this.saveDefaultConfig();
+		usePermissions = getConfig().getBoolean("usePermissions");
+		lang = getConfig().getConfigurationSection("msg").getValues(false);
+		VI.log("using permissions = "+usePermissions);		
 		
 		// no events just 1 command below
 		
@@ -62,11 +69,19 @@ public final class VI extends JavaPlugin
 		
 		if (!(sender instanceof Player))
 		{
-			sender.sendMessage("Sorry, only for online players for now");
+			sender.sendMessage("§D"+msg("onlyPlayers"));
 			return true;
 		}
 		
-		sender.sendMessage(insideVillageText((Player)sender));
+		Player pla = (Player)sender;
+		
+		//VI.log("usePerm, hasPerm, isOp = "+usePermissions+pla.hasPermission("villageinfo.use")+pla.isOp());
+		if (!usePermissions || pla.hasPermission("villageinfo.use") || pla.isOp()){
+			sender.sendMessage(insideVillageText(pla));
+			return true;
+		}
+		
+		pla.sendMessage("§D"+msg("forbidden"));
 		return true;
 	}
 	
@@ -86,20 +101,20 @@ public final class VI extends JavaPlugin
 			rad = VillageUtil.getRadius(vil);
 			if (loc.distanceSquared(cen) <= (rad * rad))
 			{
-				String msg = "\n§ECenter: ";
-				msg += (cen.getBlockX()<0 ? "" : "+")+cen.getBlockX()+(cen.getBlockY()<0 ? "" : "+")+cen.getBlockY()+(cen.getBlockZ()<0 ? "" : "+")+cen.getBlockZ();
-				msg += ", Radius: "+rad+"\n"+villageText(vil, pla);
+				String out = "\n§ECenter: ";
+				out += (cen.getBlockX()<0 ? "" : "+")+cen.getBlockX()+(cen.getBlockY()<0 ? "" : "+")+cen.getBlockY()+(cen.getBlockZ()<0 ? "" : "+")+cen.getBlockZ();
+				out += ", Radius: "+rad+"\n"+villageText(vil, pla);
 				
 				if (Math.abs(loc.getBlockX() - cen.getBlockX()) <= 8 && Math.abs(loc.getBlockY() - cen.getBlockY()) <= 3 && Math.abs(loc.getBlockZ()-cen.getBlockZ()) <= 8)
 				{
-					msg += ", Inside Golem Spawn Area";
+					out += ", Inside Golem Spawn Area";
 				}
 				
-				return msg;
+				return out;
 			}
 		}
 		
-		return "§DYou are not inside a Village radius";
+		return "§D"+msg("notInVillage");
 	}
 	
 	private String villageText(Village vil, Player pla)
@@ -124,13 +139,14 @@ public final class VI extends JavaPlugin
 		boolean breed = VillageUtil.isMatingSeason(vil); // OK|Stopped
 		
 		// §B=cyan, §D=magenta, §E=yellow
-		String msg = "Villagers: "+people+" ("+breedLimit+"), ";
-		msg += "Golems: "+golems+" ("+golemLimit+")\n";
-		msg += (enoughDoors ? "§B" : "§D")+"Houses: "+doors+"§E, ";
-		msg += (lowRep ? "§D" : "§B")+"Your Reputation: "+rep+"§E\n";
-		msg += "Breeding Status: "+(breed ? "OK" : "Stopped");
+		// § = alt+21 (win), save as ansi
+		String out = "Villagers: "+people+" ("+breedLimit+"), ";
+		out += "Golems: "+golems+" ("+golemLimit+")\n";
+		out += (enoughDoors ? "§B" : "§D")+"Houses: "+doors+"§E, ";
+		out += (lowRep ? "§D" : "§B")+"Your Reputation: "+rep+"§E\n";
+		out += msg("breedStatus")+": "+(breed ? msg("ok") : msg("Stopped"));
 		
-		return msg;
+		return out;
 	}
 	
     private List<Village> getVillagesByWorldName(String w)
@@ -178,5 +194,12 @@ public final class VI extends JavaPlugin
 		{
 			field.setAccessible(true);
 		}
+	}
+	
+	// localization method
+	private String msg(String key)
+	{
+		if (!(lang.containsKey(key))) return key;
+		return (String)lang.get(key);
 	}
 }

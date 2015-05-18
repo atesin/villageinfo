@@ -133,5 +133,15 @@ in eclipse - git repos view
 - yourNewRepo - expand - remotes - rclick - PASTE URI - next - (delete dir before) - finish
 - config your libs and do your push
 
+-----------------------------------
+
+ROLLBACK WITH PREVIOUS COMMIT
+
+- pkg expl - myProj - delete all sources first
+- pkg expl - myProj - rclick - replace with - commit - select one
+- (edit sources and) push
+
+WORK WITH BRANCHES
+
 
 
