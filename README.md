@@ -1,4 +1,4 @@
 # villageinfo
-minecraft plugin to show village info on text area, inspired on villageinfo mod
+show village info on minecraft chat area
 
 to fill in
