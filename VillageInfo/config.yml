@@ -5,15 +5,12 @@ usePermissions: false
 # localized global strings
 msg:
   forbidden: Sorry, you have no permission to use this command
-  onlyPlayers: Sorry, only for online players for now
-  insideGolemSpawn: Inside Golem Spawn Area
+  onlyPlayers: Sorry, this command is only for online players
   notInVillage: You are not inside a Village radius
-  yourRep: Your Reputation
-  breedStatus: Breeding Status
   center: Center
   radius: Radius
   villagers: Villagers
   golems: Golems
   houses: Houses
-  ok: OK
-  stopped: Stopped
+  reputation: Reputation
+  max: max
