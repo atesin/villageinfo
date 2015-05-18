@@ -1,13 +1,14 @@
-v3
+v3.183
+
 - add permissions system compatibility
 - add localization support
 
-v2
+v2.183
 
 - fix golem spawn area calculation
 - this build v2.179 compiled for craftbukkit 1.8.3
 
-v1
+v1.183
 
 - initial release, compatible with craftbukkit 1.8.4 only
 - todo (maybe): add aggressors information if possible
