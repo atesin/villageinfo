@@ -1,4 +1,4 @@
 # villageinfo
 show village info on minecraft chat area
 
-to fill in
+visit project page at http://dev.bukkit.org/bukkit-plugins/villageinfo/
