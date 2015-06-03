@@ -1,3 +1,6 @@
+v5.183
+- fix for loading plugin before world, thanks to lululombard
+
 v4.183
 - optimized code and output format
 
