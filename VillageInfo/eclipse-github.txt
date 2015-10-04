@@ -124,8 +124,8 @@ in github
 
 in eclipse - pkg explorer
 
-//- on git repos view: add new repo (can with yellow "+" sign) - give a name
-- myProj - rclick - team - share - git
+//- on git repos view: add new repo (can with yellow "+" sign) - give a name (subdir)
+- on pkg expl: myProj - rclick - team - share - git
 - repo: new (like commented step) - give a name - finish
 
 in eclipse - git repos view

@@ -1,9 +1,9 @@
 package cl.netgamer.villageinfo;
 
-import net.minecraft.server.v1_8_R2.AxisAlignedBB;
-import net.minecraft.server.v1_8_R2.EntityIronGolem;
-import net.minecraft.server.v1_8_R2.Village;
-import net.minecraft.server.v1_8_R2.WorldServer;
+import net.minecraft.server.v1_8_R3.AxisAlignedBB;
+import net.minecraft.server.v1_8_R3.EntityIronGolem;
+import net.minecraft.server.v1_8_R3.Village;
+import net.minecraft.server.v1_8_R3.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.World;
