@@ -8,12 +8,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Logger;
 
-//179 = import net.minecraft.server.v1_7_R3.MinecraftServer;
-//183 = import net.minecraft.server.v1_8_R2.MinecraftServer;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
-import net.minecraft.server.v1_8_R3.PersistentVillage;
-import net.minecraft.server.v1_8_R3.Village;
-import net.minecraft.server.v1_8_R3.WorldServer;
+// mc179 = import net.minecraft.server.v1_7_R3.*;
+// mc183 = import net.minecraft.server.v1_8_R2.*;
+// mc184-189 = import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R1.MinecraftServer;
+import net.minecraft.server.v1_9_R1.PersistentVillage;
+import net.minecraft.server.v1_9_R1.Village;
+import net.minecraft.server.v1_9_R1.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;

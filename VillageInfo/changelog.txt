@@ -1,3 +1,7 @@
+v5.190
+
+- changes compatibility to minecraft 1.9
+
 v5.183
 - fix no village found because plugin loaded before world, thanks to lululombard
 
