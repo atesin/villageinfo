@@ -11,10 +11,11 @@ import java.util.logging.Logger;
 // mc179 = import net.minecraft.server.v1_7_R3.*;
 // mc183 = import net.minecraft.server.v1_8_R2.*;
 // mc184-189 = import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_9_R1.MinecraftServer;
-import net.minecraft.server.v1_9_R1.PersistentVillage;
-import net.minecraft.server.v1_9_R1.Village;
-import net.minecraft.server.v1_9_R1.WorldServer;
+// mc190-193 = import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_9_R2.MinecraftServer;
+import net.minecraft.server.v1_9_R2.PersistentVillage;
+import net.minecraft.server.v1_9_R2.Village;
+import net.minecraft.server.v1_9_R2.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.command.Command;

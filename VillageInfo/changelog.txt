@@ -1,3 +1,7 @@
+v5.194
+
+- changes compatibility to minecraft 1.9.4
+
 v5.190
 
 - changes compatibility to minecraft 1.9

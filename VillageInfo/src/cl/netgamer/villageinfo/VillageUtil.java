@@ -1,10 +1,11 @@
 package cl.netgamer.villageinfo;
 
 // mc184-189 = import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_9_R1.AxisAlignedBB;
-import net.minecraft.server.v1_9_R1.EntityIronGolem;
-import net.minecraft.server.v1_9_R1.Village;
-import net.minecraft.server.v1_9_R1.WorldServer;
+// mc190-193 = import net.minecraft.server.v1_9_R1.*;
+import net.minecraft.server.v1_9_R2.AxisAlignedBB;
+import net.minecraft.server.v1_9_R2.EntityIronGolem;
+import net.minecraft.server.v1_9_R2.Village;
+import net.minecraft.server.v1_9_R2.WorldServer;
 
 import org.bukkit.Location;
 import org.bukkit.World;
