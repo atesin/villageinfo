@@ -1,3 +1,9 @@
+v6
+
+- extend compatibility through reflection
+- various code optimizations
+- changed outside golem spawn area color from yellow to magenta to stay header always yellow
+
 v5.194
 
 - changes compatibility to minecraft 1.9.4
