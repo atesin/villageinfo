@@ -34,13 +34,13 @@ public final class Main extends JavaPlugin
 		getLogger().info("Using permissions: "+usePermissions);		
 		
 		// create a map of WorldServers by its name, for later quick search
-	    try
+		try
 		{
-	    	// up to mc 1.12.2 (java 7): Method.invoke() didn't need an instance, CraftServer.getWorlds() method didn't exist yet
+			// up to mc 1.12.2 (java 7): Method.invoke() didn't need an instance, CraftServer.getWorlds() method didn't exist yet
 			//Object minecraftServer = Class.forName("net.minecraft.server."+version+".MinecraftServer").getMethod("getServer").invoke(null);
 			//for (Object worldServer : (List<Object>) minecraftServer.getClass().getField("worlds").get(minecraftServer))
-	    	
-	    	Object minecraftServer = Class.forName("org.bukkit.craftbukkit."+version+".CraftServer").getMethod("getServer").invoke(this.getServer());
+			
+			Object minecraftServer = Class.forName("org.bukkit.craftbukkit."+version+".CraftServer").getMethod("getServer").invoke(this.getServer());
 			for (Object worldServer : (Iterable) minecraftServer.getClass().getMethod("getWorlds").invoke(minecraftServer))
 			{
 				Object craftWorld = worldServer.getClass().getSuperclass().getMethod("getWorld").invoke(worldServer);
