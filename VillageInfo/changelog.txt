@@ -2,6 +2,7 @@ v7
 
 - finally craftbukkit 1.13+ support, yay!
 - added a license text (gpl v3), please read it at least once
+- fixed "notInVillage" message header color to be uniform (yellow)
 
 v6
 

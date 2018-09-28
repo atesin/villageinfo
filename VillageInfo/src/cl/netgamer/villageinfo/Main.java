@@ -2,13 +2,11 @@ package cl.netgamer.villageinfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -41,7 +39,7 @@ public final class Main extends JavaPlugin
 			//for (Object worldServer : (List<Object>) minecraftServer.getClass().getField("worlds").get(minecraftServer))
 			
 			Object minecraftServer = Class.forName("org.bukkit.craftbukkit."+version+".CraftServer").getMethod("getServer").invoke(this.getServer());
-			for (Object worldServer : (Iterable) minecraftServer.getClass().getMethod("getWorlds").invoke(minecraftServer))
+			for (Object worldServer : (Iterable<Object>) minecraftServer.getClass().getMethod("getWorlds").invoke(minecraftServer))
 			{
 				Object craftWorld = worldServer.getClass().getSuperclass().getMethod("getWorld").invoke(worldServer);
 				this.worlds.put((String) craftWorld.getClass().getMethod("getName").invoke(craftWorld), worldServer);
@@ -136,7 +134,7 @@ public final class Main extends JavaPlugin
 			return;
 		}
 		// not inside a village
-		player.sendMessage("\u00A7D"+msg("notInVillage"));
+		player.sendMessage("\u00A7E"+msg("notInVillage"));
 	}
 	
 	private List<Object> getVillagesByWorldName(String worldName)
