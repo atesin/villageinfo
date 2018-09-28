@@ -2,11 +2,13 @@ package cl.netgamer.villageinfo;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.command.Command;
@@ -34,8 +36,12 @@ public final class Main extends JavaPlugin
 		// create a map of WorldServers by its name, for later quick search
 	    try
 		{
-			Object minecraftServer = Class.forName("net.minecraft.server."+version+".MinecraftServer").getMethod("getServer").invoke(null);
-			for (Object worldServer : (List<Object>) minecraftServer.getClass().getField("worlds").get(minecraftServer))
+	    	// up to mc 1.12.2 (java 7): Method.invoke() didn't need an instance, CraftServer.getWorlds() method didn't exist yet
+			//Object minecraftServer = Class.forName("net.minecraft.server."+version+".MinecraftServer").getMethod("getServer").invoke(null);
+			//for (Object worldServer : (List<Object>) minecraftServer.getClass().getField("worlds").get(minecraftServer))
+	    	
+	    	Object minecraftServer = Class.forName("org.bukkit.craftbukkit."+version+".CraftServer").getMethod("getServer").invoke(this.getServer());
+			for (Object worldServer : (Iterable) minecraftServer.getClass().getMethod("getWorlds").invoke(minecraftServer))
 			{
 				Object craftWorld = worldServer.getClass().getSuperclass().getMethod("getWorld").invoke(worldServer);
 				this.worlds.put((String) craftWorld.getClass().getMethod("getName").invoke(craftWorld), worldServer);
@@ -43,7 +49,7 @@ public final class Main extends JavaPlugin
 		}
 		catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException
 				| InvocationTargetException | NoSuchMethodException
-				| SecurityException | NoSuchFieldException e){e.printStackTrace();}
+				| SecurityException e){e.printStackTrace();}
 	}
 	
 	// command
