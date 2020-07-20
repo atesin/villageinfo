@@ -1,0 +1,17 @@
+
+# https://www.spigotmc.org/wiki/plugin-yml/
+
+name: VillageInfo
+main: cl.netgamer.villageinfo.Main
+version: 8.114
+api-version: 1.14
+
+commands:
+   villageinfo:
+      description: show info about current town.
+      usage: "just type '/villageinfo' or '/vi' when inside a town to display info"
+      aliases: [vi,towninfo]
+softdepend: ['Multiverse', 'Multiverse-Core']
+ 
+# aqui tambien se configuran los permisos (ya no? = solo si quieres que se registren al cargar el plugin)
+# no usar la letra enye

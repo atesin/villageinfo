@@ -1,0 +1,30 @@
+# VillageInfo Plugin config file (https://dev.bukkit.org/projects/villageinfo)
+
+# there are no restrictions with permissions disabled
+# it has just one permission: "villageinfo.use" (not registered in plugin.yml)
+usePermissions: false
+
+# localized global string messages
+# to avoid encoding problems please use plain ascii with unicode escapes
+# you can upload your translation to plugin repo: https://github.com/atesin/villageinfo 
+messages:
+  forbidden: Sorry, you have no permission to use this command
+  notInVillage: No nearby Villages were found
+  center: Village Center
+  villagers: Villagers
+  traders: Nomad Traders
+  golems: Iron Golems
+  cats: Cats
+  animals: Farm Animals
+  zombies: Zombies
+  illagers: Illagers
+  houses: Houses (Beds)
+  sites: Job Sites
+  front: front
+  back: back
+  left: left
+  right: right
+  above: above
+  below: below
+  here: here!
+  blocks: Blocks

@@ -1,0 +1,52 @@
+v8.114
+
+- total rewrite to support MC 1.14+ as many things had changed a lot
+- return to prior version numbering to reflect plugin version and MC conpatibility
+- clarified license.txt, please read just once
+- new "village center" finding algorithm (estimated) with friendly display format
+- better info about village inhabitants, visitors and invaders
+- updated info about village blocks (beds, job sites)
+- display server console warnings on missing translations
+- dropped reputation info display (currently very obfuscated and complex, contact me if you have ideas)
+- enhanced compatibility and versions survival by dropping NMS classes (had no choice anyway xD)
+
+v7
+
+- finally craftbukkit 1.13+ support, yay!
+- added a license text (gpl v3), please read it at least once
+- fixed "notInVillage" message header color to be uniform (yellow)
+
+v6
+
+- extend compatibility through reflection
+- various code optimizations
+- changed outside golem spawn area color from yellow to magenta to stay header always yellow
+
+v5.194
+
+- changes compatibility to minecraft 1.9.4
+
+v5.190
+
+- changes compatibility to minecraft 1.9
+
+v5.183
+- fix no village found because plugin loaded before world, thanks to lululombard
+
+v4.183
+- optimized code and output format
+
+v3.183
+
+- add permissions system compatibility
+- add localization support
+
+v2.183
+
+- fix golem spawn area calculation
+- this build v2.179 compiled for craftbukkit 1.8.3
+
+v1.183
+
+- initial release, compatible with craftbukkit 1.8.4 only
+- todo (maybe): add aggressors information if possible

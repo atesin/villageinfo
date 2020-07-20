@@ -1,26 +1,18 @@
 package cl.netgamer.villageinfo;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-
 import org.bukkit.Location;
-import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class Main extends JavaPlugin
 {
 	// properties
-	private Map<String, Object> worlds = new HashMap<String, Object>();
 	private boolean usePermissions;
-	private Map<String, Object> lang;
-	private String version = getServer().getClass().getName().split("\\.")[3];
+	private Map<String, Object> messages;
 	
 	// plugin load
 	public void onEnable()
@@ -28,27 +20,10 @@ public final class Main extends JavaPlugin
 		// get config
 		this.saveDefaultConfig();
 		usePermissions = getConfig().getBoolean("usePermissions");
-		lang = getConfig().getConfigurationSection("msg").getValues(false);
-		getLogger().info("Using permissions: "+usePermissions);		
-		
-		// create a map of WorldServers by its name, for later quick search
-		try
-		{
-			// up to mc 1.12.2 (java 7): Method.invoke() didn't need an instance, CraftServer.getWorlds() method didn't exist yet
-			//Object minecraftServer = Class.forName("net.minecraft.server."+version+".MinecraftServer").getMethod("getServer").invoke(null);
-			//for (Object worldServer : (List<Object>) minecraftServer.getClass().getField("worlds").get(minecraftServer))
-			
-			Object minecraftServer = Class.forName("org.bukkit.craftbukkit."+version+".CraftServer").getMethod("getServer").invoke(this.getServer());
-			for (Object worldServer : (Iterable<Object>) minecraftServer.getClass().getMethod("getWorlds").invoke(minecraftServer))
-			{
-				Object craftWorld = worldServer.getClass().getSuperclass().getMethod("getWorld").invoke(worldServer);
-				this.worlds.put((String) craftWorld.getClass().getMethod("getName").invoke(craftWorld), worldServer);
-			}
-		}
-		catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException
-				| InvocationTargetException | NoSuchMethodException
-				| SecurityException e){e.printStackTrace();}
+		messages = getConfig().getConfigurationSection("messages").getValues(false);
+		getLogger().info("Using permissions: "+usePermissions);	
 	}
+	
 	
 	// command
 	@Override
@@ -60,7 +35,7 @@ public final class Main extends JavaPlugin
 		
 		if (!(sender instanceof Player))
 		{
-			sender.sendMessage("\u00A7D"+msg("onlyPlayers"));
+			sender.sendMessage("This command only makes sense for online players");
 			return true;
 		}
 		
@@ -75,122 +50,231 @@ public final class Main extends JavaPlugin
 		return true;
 	}
 	
+	
 	// core method
 	void printVillageInfo(Player player)
 	{
-		// previous checks
-		Location pLoc = player.getLocation();
-		Location vCen;
-		int rad = 0;
+		Location pLoc = player.getEyeLocation();
+		Location vCen = null; // geometric center of villagers found
 		
-		// iterate villages from the world where player is
-		for (Object vil: getVillagesByWorldName(pLoc.getWorld().getName()))
+		int villagers, golems, cats, animals, traders, illagers, zombies;
+		villagers = golems = cats = animals = traders = illagers = zombies = 0;
+		
+		// scan entities first: no villagers = no village
+		
+		for (Entity mob : player.getNearbyEntities(64, 32, 64))
 		{
-			try
+			String mobClass = mob.getClass().getSimpleName();
+			
+			switch (mobClass)
 			{
-				// get village center and radius and guess if player is inside
-				vCen = getCenter(vil, pLoc.getWorld());
-				rad = (int) vil.getClass().getMethod("b").invoke(vil);
-				if (pLoc.distanceSquared(vCen) > (rad * rad))
-					continue;
-				
-				/*
-				Center: +234+54-324, Radius: 32		// informational: always yellow
-				Houses: 8							// red=not enough houses for golems, blue=enough
-				Villagers: 7 (max 3)				// red=no mating season, blue=mating
-				Golems: 2 (max 3)					// blue=inside spawn
-				Reputation: 4						// red=hated, blue=loved
-				*/
-				
-				// for less redundancy
-				int vX = vCen.getBlockX();
-				int vY = vCen.getBlockY();
-				int vZ = vCen.getBlockZ();
-				boolean insideGolems = Math.abs(pLoc.getBlockX()-vX)<=8 && Math.abs(pLoc.getBlockY()-vY)<=3 && Math.abs(pLoc.getBlockZ()-vZ)<=8;
-				Class<?> villageClass = vil.getClass();
-				
-				// get village info
-				int doors = (int) villageClass.getMethod("c").invoke(vil);
-				int people = (int) villageClass.getMethod("e").invoke(vil);
-				int maxPeople = (int)(doors * 0.35D);
-				int golems = countGolems(vil);
-				int maxGolems = people / 10;
-				int rep = (int) villageClass.getMethod("a", String.class).invoke(vil, player.getName());
-				boolean enoughDoors = (doors > 20); // cyan|magenta
-				boolean lowRep = (boolean) villageClass.getMethod("d", String.class).invoke(vil, player.getName()); // magenta|cyan
-				boolean breeding = (boolean) villageClass.getMethod("i").invoke(vil);
-				
-				// print (\u00A7B=cyan, \u00A7D=magenta, \u00A7E=yellow, \u00A7 = section sign)
-				player.sendMessage(
-					"\u00A7E"+msg("center")+": "+(vX<0?"":"+")+vX+(vY<0?"":"+")+vY+(vZ<0?"":"+")+vZ+",  "+msg("radius")+": "+rad+"\n"+
-					(enoughDoors?"\u00A7B":"\u00A7D")+msg("houses")+": "+doors+"\n"+
-					(breeding?"\u00A7B":"\u00A7D")+msg("villagers")+": "+people+" ("+msg("max")+" "+maxPeople+")"+"\n"+
-					(insideGolems?"\u00A7B":"\u00A7D")+msg("golems")+": "+golems+" ("+msg("max")+" "+maxGolems+")"+"\n"+
-					(lowRep?"\u00A7D":"\u00A7B")+msg("reputation")+": "+rep);
+			case "CraftVillager":
+			case "CraftVillagerZombie":
+				if (vCen == null)
+					vCen = mob.getLocation().subtract(pLoc);
+				else
+					vCen.add(mob.getLocation().subtract(pLoc));
+				++villagers;
+				continue;
 			}
-			catch (IllegalAccessException | IllegalArgumentException
-					| InvocationTargetException | NoSuchMethodException
-					| SecurityException e){e.printStackTrace();}
+			
+			switch (mobClass)
+			{
+			case "CraftPillager":
+			case "CraftVindicator":
+			case "CraftRavager":
+			case "CraftEvoker":
+			case "CraftVex":
+			case "CraftIlusioner":
+			case "CraftWitch":
+				++illagers;
+				continue;
+			}
+			
+			switch (mobClass)
+			{
+			case "CraftCow":
+			case "CraftHorse":
+			case "CraftSheep":
+			case "CraftPig":
+				++animals;
+				continue;
+			}
+			
+			switch (mobClass)
+			{
+			case "CraftWanderingTrader":
+			case "CraftTraderLlama":
+				++traders;
+				continue;
+			}
+			
+			if (mobClass.equals("CraftIronGolem"))
+				++golems;
+			else if (mobClass.equals("CraftCat"))
+				++cats;
+			else if (mobClass.equals("CraftZombie"))
+				++zombies;
+		}
+		
+		if (villagers < 1)
+		{
+			player.sendMessage("\u00A7E"+msg("notInVillage"));
 			return;
 		}
-		// not inside a village
-		player.sendMessage("\u00A7E"+msg("notInVillage"));
+		
+		// scan blocks around village center
+		
+		vCen.multiply(1D / villagers).add(pLoc);
+		int houses, sites;
+		houses = sites = 0;
+				
+		for (Location loc : new BoxScanner(pLoc).scan())
+		{
+			String blockType = loc.getBlock().getType().toString();
+			
+			switch (blockType)
+			{
+			case "BLAST_FURNACE":     // armorer
+			case "SMOKER":            // butcher
+			case "CARTOGRAPHY_TABLE": // cartographer
+			case "BREWING_STAND":     // cleric
+			case "COMPOSTER":         // farmer
+			case "BARREL":            // fisherman
+			case "FLETCHING_TABLE":   // fletcher
+			case "CAULDRON":          // leatherworker
+			case "LECTERN":           // librarian
+			case "STONECUTTER":       // mason
+			case "LOOM":              // shepherd
+			case "SMITHING_TABLE":    // toolsmith
+			case "GRINDSTONE":        // weaponsmith
+				++sites;
+				continue;
+			}
+			
+			if (blockType.endsWith("_BED"))
+				++houses;
+			//else if (blockType.equals("BELL"))
+			//	++bells;
+		}
+		
+		/*
+		Legend                                       : caution state: magenta (normal state: cyan)
+		---------------------------------------------------------------------------
+		Village Center: front right above, 34 blocks : always yellow, informational
+		Villagers: 9                                 : less than beds
+		Nomad Traders: 3                             : none: cyan normal, any: cyan bold
+		Golems: 2                                    : less than 1/5 villagers
+		Cats: 5                                      : less than 1/4 beds
+		Farm animals: 17                             : none (maybe were killed)
+		Zombies: 12                                  : any (if many: possible siege in progress)
+		Illagers: 5                                  : any (possible raid in progress)
+		Houses (beds): 12                            : less than 10 (not enough to spawn golems)
+		Job sites: 5                                 : less than than villagers
+		*/
+		
+		player.sendMessage("\u00A7E"+msg("center")+": "+directionExplain(player.getEyeLocation(), vCen)+"\n\u00A7"+
+			(villagers < houses      ? "D": "B")+msg("villagers")+": "+villagers+"\n\u00A7B"+
+			(traders < 1        ? "": "\u00A7L")+msg("traders")+": "+traders+"\n\u00A7R\u00A7"+
+			(golems < (villagers / 5)? "D": "B")+msg("golems")+": "+golems+"\n\u00A7"+
+			(cats < (houses / 4)     ? "D": "B")+msg("cats")+": "+cats+"\n\u00A7"+
+			(animals < 1             ? "D": "B")+msg("animals")+": "+animals+"\n\u00A7"+
+			(zombies > 0             ? "D": "B")+msg("zombies")+": "+zombies+"\n\u00A7"+
+			(illagers > 0            ? "D": "B")+msg("illagers")+": "+illagers+"\n\u00A7"+
+			(houses < 9              ? "D": "B")+msg("houses")+": "+houses+"\n\u00A7"+
+			(sites < villagers       ? "D": "B")+msg("sites")+": "+sites
+		);
 	}
 	
-	private List<Object> getVillagesByWorldName(String worldName)
+	
+	private String directionExplain(Location source, Location target)
 	{
-		try
-		{
-			// get declared field, since is not public?
-			Field villages = Class.forName("net.minecraft.server."+version+".World").getDeclaredField("villages");
-			villages.setAccessible(true);
-			Object persistentVillageInstance = villages.get(worlds.get(worldName));
-			if (persistentVillageInstance == null)
-				return new ArrayList<Object>();
-			return (List<Object>) Class.forName("net.minecraft.server."+version+".PersistentVillage").getMethod("getVillages").invoke(persistentVillageInstance);
-		}
-		catch (NullPointerException | NoSuchFieldException |
-			IllegalArgumentException | IllegalAccessException |
-			InvocationTargetException | NoSuchMethodException |
-			SecurityException | ClassNotFoundException e){e.printStackTrace();}
-		return new ArrayList<Object>();
+		double distance = fastDistance(source, target);
+		if (distance < 5)
+			return msg("here");
+		
+		// divide pitch in 5 regions:
+		// above, yaw+above, yaw, yaw+below, below
+		
+		String explain = ", "+(int) distance+" "+msg("blocks");
+		Location direction = source.clone().setDirection(target.clone().subtract(source).toVector());
+		float pitch = Location.normalizePitch(direction.getPitch());
+		
+		if (pitch > 67.5)
+			return msg("below")+explain;
+		
+		if (pitch < -67.5)
+			return msg("above")+explain;
+		
+		if (pitch > 22.5)
+			explain = " "+msg("below")+explain;
+		else if (pitch < -22.5)
+			explain = " "+msg("above")+explain;
+		
+		// divide yaw in 8 regions:
+		// back, back-right, back-left, right, left, front-right, front-left, front
+		
+		float yaw = Location.normalizeYaw(direction.getYaw() - source.getYaw());
+		
+		if (yaw > 157.5 || yaw < -157.5)
+			return msg("back")+explain;
+		
+		if (yaw > 112.5)
+			return msg("back")+" "+msg("right")+explain;
+		
+		if (yaw < -112.5)
+			return msg("back")+" "+msg("left")+explain;
+		
+		if (yaw > 67.5)
+			return msg("right")+explain;
+		
+		if (yaw < -67.5)
+			return msg("left")+explain;
+		
+		if (yaw > 22.5)
+			return msg("front")+" "+msg("right")+explain;
+		
+		if (yaw < -22.5)
+			return msg("front")+" "+msg("left")+explain;
+		
+		return msg("front")+explain;
 	}
+	
+	
+	private double fastDistance(Location a, Location b)
+	{
+		if (a.getWorld() != b.getWorld())
+			throw new IllegalArgumentException();
+		
+		return fastDistance(fastDistance(b.getX() - a.getX(), b.getY() - a.getY()), b.getZ() - a.getZ());
+	}
+	
+	
+	private double fastDistance(double a, double b)
+	{
+		// https://math.stackexchange.com/questions/2533022/fast-approximated-hypotenuse-without-squared-root
+		// m = x/y ... (0 <= x <= y / y != 0)
+		// d ~= y (1 + 0.43*m^2)
+		
+		if ((a = Math.abs(a)) > (b = Math.abs(b)))
+			a -= (b = (a += b) - b);
+		
+		if (a == 0)
+			return b;
+		
+		double m = a / b;
+		return b * (1 + (0.43 * m * m));
+	}
+	
 	
 	// localization method
 	private String msg(String key)
 	{
-		if (!(lang.containsKey(key))) return key;
-		return (String)lang.get(key);
+		if (messages.containsKey(key))
+			return (String)messages.get(key);
+		
+		getLogger().warning("String not found in config: messages."+key);
+		return key;
 	}
-	
-	// get village center
-	private Location getCenter(Object village, World w)
-	{
-		try
-		{
-			Object blockPosition = village.getClass().getMethod("a").invoke(village);
-			int x = (int) blockPosition.getClass().getMethod("getX").invoke(blockPosition);
-			int y = (int) blockPosition.getClass().getMethod("getY").invoke(blockPosition);
-			int z = (int) blockPosition.getClass().getMethod("getZ").invoke(blockPosition);
-			return new Location(w, x, y, z);
-		}
-		catch (IllegalAccessException | IllegalArgumentException
-			| InvocationTargetException | NoSuchMethodException
-			| SecurityException e){e.printStackTrace();}
-		return new Location(w, 0, 0, 0);
-	}
-	
-	// count golems near village
-	protected static int countGolems(Object v)
-	{
-		try
-		{
-			Field l = v.getClass().getDeclaredField("l");
-			l.setAccessible(true);
-			return l.getInt(v);
-		}
-		catch (SecurityException | IllegalAccessException
-			| IllegalArgumentException | NoSuchFieldException e){e.printStackTrace();}
-		return -1;
-	}
+
 }

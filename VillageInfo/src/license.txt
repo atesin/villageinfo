@@ -1,0 +1,20 @@
+
+released under gnu general public license version 3 (gpl v3)
+
+full license text = https://www.gnu.org/licenses/gpl-3.0.html
+
+summary:
+
+- the gpl v3 license was created to encourage software development, grow, spread and evolution over all, that's why...
+- i am forced to publish the full source code, without restrictions (see location below)
+- any distributed copy must mention the original author (me) and the source code location
+- in addition to above, your modified version's and derived work's license must also be compatible with gpl v3
+
+original author = atesin <atesin()gmail!com>
+source code location = https://github.com/atesin/villageinfo
+
+additionally:
+
+this piece of software was made just for fun and learning, for nothing serious, and was published
+for free(dom) without any warranty, so you are the only responsible for download and use it, but
+you have also the freedom to contact me to talk or ask anything, with respect and without demands
